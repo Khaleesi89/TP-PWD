@@ -330,6 +330,113 @@ class Compraestado extends db{
         return $data;
     }    
     
+    //HACER FUNCION PARA RESTAR LA CANTIDAD DE PRODUCTOS.
+    //tengo que traer la compra, el compraitem y producto
+    public function cambiarStocksegunEstado($datos){
+        $idcompraestado = $datos['idcompraestado'];//[idcompraestado] => 147[idcompra] =>[cefechaini] => [idcompraestadotipo] => 2
+        $data = $datos['idcompraestadotipo'];
+        $arrayBus['idcompraestado'] = $idcompraestado;
+        $rta = $this->buscar($arrayBus);
+        //obtengo el obj compra que tiene el objetoY
+        $objCompra = $this->getObjCompra();
+        //obtengo el obj estadotipo que tiene sin el cambio
+        //obtengo el id de la compra
+        $idCompra = $objCompra->getIdcompra();
+        //hacemos bandera
+        $respuesta = [];                
+        //creo un array para realizar la bsuqueda de eso en el parametro en compraitem
+        $array = [];
+        $array['idcompra'] = $idCompra;
+        $arraycompraitem = Compraitem::listar($array);
+        if(array_key_exists('array', $arraycompraitem)){
+            $listaCompraitem = $arraycompraitem['array'];
+            foreach ($listaCompraitem as $key => $value) {
+                $objCompraitem = $value;
+                $cantidadComprada = $objCompraitem->getCicantidad();
+                $producto = $objCompraitem->getObjProducto();
+                $cantidadtotal = $producto->getProCantStock();
+                if($data == "2" || $data == 2){
+                    if($cantidadtotal > $cantidadComprada){
+                        $totalyn = $cantidadtotal - $cantidadComprada;
+                        $producto->setProCantStock($totalyn);
+                        $producto->modificar();
+                        $mensaje = "Su stock es suficiente, puede realizar la compra";
+                        $respuesta['mensaje'] = $mensaje;
+                        $respuesta['respuesta'] = true;
+                        
+                    }else{
+                        $mensaje = "Tiene stock insuficiente";
+                        $respuesta['mensaje'] = $mensaje;
+                        $respuesta['respuesta'] = false;
+                        
+                    }
+                }elseif ($data == 4 || $data == "4") {
+                    //hacer que vuelva a sumar el stock
+                    $totalito = $cantidadtotal + $cantidadComprada;
+                    $producto->setProCantStock($totalito);
+                    $producto->modificar();
+                    $respuesta['respuesta'] = true;
+                }elseif ($data == 3 || $data == "3") {
+                        //se deja igual el stock pero se envia true para que siga el proceso
+                        $respuesta['respuesta'] = true;
+                }else{
+                    $mensaje = "Debe cambiar el estado tipo";
+                    $respuesta['mensaje'] = $mensaje;
+                    $respuesta['respuesta'] = false;
+                }    
+            } 
+        }else{
+            $respuesta['respuesta'] = false;
+            $respuesta['mensaje'] = "No existen items en su compra";  
+        }
+        return $respuesta;    
+    }
 
+
+    //para modificar la fecha y modificarla en la base de datos
+    public function modificarFechafin($data){
+        //buscar por [idcompraestado]
+        $arrayBus['idcompraestado'] = $data['idcompraestado'];
+        $try = $this->buscar($arrayBus);
+        if($try['respuesta']){
+            $fechafin = date("Y-m-d H:i:s");
+            $this->setCefechafin($fechafin);
+            $rta = $this->modificar();
+            if($rta['respuesta']){
+                $respuesta = true;
+            }else{
+                $respuesta  = false;
+            }
+        }else{
+            $respuesta = false;
+        }
+        return $respuesta;   
+    }
     
+
+
+    //FUNCION PARA CREAR EL NUEVO ESTADO ELEGIDO
+
+    public function crearNuevoestadoElegido($data){
+        $array = [];
+        //tengo objeto compra
+        $array ['idcompra'] = $data['idcompra'];
+        $objCompra = new Compra();
+        $objCompra->buscar($array);
+        //tengo objeto compraestadotipo
+        $arrayBusquedasT = [];
+        $arrayBusquedasT ['idcompraestadotipo'] = $data['idcompraestadotipo'];
+        $objCompraestadotipo = new Compraestadotipo();
+        $objCompraestadotipo->buscar($arrayBusquedasT);
+        //$estado =  $objCompraestadotipo->getCetdescripcion();
+        //cargo el nuevo compraestado con el estadotipo nuevo
+        $this->cargar($objCompra, $objCompraestadotipo);
+        $rta = $this->insertar();
+        if($rta){
+            $respuesta ['respuesta'] = true;
+        }else{
+            $respuesta ['respuesta'] = false;
+        }
+        return $respuesta;
+    }
 }

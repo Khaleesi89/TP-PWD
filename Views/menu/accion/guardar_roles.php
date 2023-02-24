@@ -52,14 +52,7 @@ if ($idmenu != null) {
             $retorno['respuesta'] = true;
         }else{
             $mensaje = 'No hay roles cargados';
-        }
-        
-    
-    
-        
-    
-    
-   
+        }   
 }else{
     $mensaje = 'No se ha podido realizar la operacion';
 }

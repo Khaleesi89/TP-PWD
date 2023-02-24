@@ -71,113 +71,6 @@ class CompraestadoController extends MasterController {
     
     } 
 
-
-    //para modificar la fecha y modificarla en la base de datos
-    public function modificarFechafin(){
-        $arrayCompraestado = $this->buscarId();
-        $objCompraestado = $arrayCompraestado['obj'];
-        $fechafin = date("Y-m-d H:i:s");
-        $objCompraestado->setCefechafin($fechafin);
-        $rta = $objCompraestado->modificar();
-        if($rta['respuesta']){
-            $respuesta = true;
-        }else{
-            $respuesta  = false;
-        }
-        return $respuesta;
-        
-        
-    }
-
-    public function crearNuevoestadoElegido($data){
-        $array = [];
-        $objCompraestado = new Compraestado();
-        //tengo objeto compra
-        $array ['idcompra'] = $data['idcompra'];
-        $objCompra = new Compra();
-        $objCompra->buscar($array);
-        //tengo objeto compraestadotipo
-        $arrayBusquedasT = [];
-        $arrayBusquedasT ['idcompraestadotipo'] = $data['idcompraestadotipo'];
-        $objCompraestadotipo = new Compraestadotipo();
-        $objCompraestadotipo->buscar($arrayBusquedasT);
-        $estado =  $objCompraestadotipo->getCetdescripcion();
-        //cargo el nuevo compraestado con el estadotipo nuevo
-        $objCompraestado->cargar($objCompra, $objCompraestadotipo);
-        $rta = $objCompraestado->insertar();
-        if($rta){
-            $respuesta ['respuesta'] = true;
-        }else{
-            $respuesta ['respuesta'] = false;
-        }
-        
-        return $respuesta;
-    }
-    
-
-    //HACER FUNCION PARA RESTAR LA CANTIDAD DE PRODUCTOS.
-    //tengo que traer la compra, el compraitem y producto
-    public function cambiarStocksegunEstado($datos){
-        $idcompraestado = $datos['idcompraestado'];//[idcompraestado] => 147[idcompra] =>[cefechaini] => [idcompraestadotipo] => 2
-        $data = $datos['idcompraestadotipo'];
-        $arrayBus['idcompraestado'] = $idcompraestado;
-        $objCompraestado = new CompraEstado();
-        $rta = $objCompraestado->buscar($arrayBus);
-        //obtengo el obj compra que tiene el objetoY
-        $objCompra = $objCompraestado->getObjCompra();
-        //obtengo el obj estadotipo que tiene sin el cambio
-        //obtengo el id de la compra
-        $idCompra = $objCompra->getIdcompra();
-        //hacemos bandera
-        $respuesta = [];                
-        //creo un array para realizar la bsuqueda de eso en el parametro en compraitem
-        $array = [];
-        $array['idcompra'] = $idCompra;
-        $arraycompraitem = Compraitem::listar($array);
-        if(array_key_exists('array', $arraycompraitem)){
-            $listaCompraitem = $arraycompraitem['array'];
-            foreach ($listaCompraitem as $key => $value) {
-                $objCompraitem = $value;
-                $cantidadComprada = $objCompraitem->getCicantidad();
-                $producto = $objCompraitem->getObjProducto();
-                $cantidadtotal = $producto->getProCantStock();
-                if($data == "2" || $data == 2){
-                    if($cantidadtotal > $cantidadComprada){
-                        $totalyn = $cantidadtotal - $cantidadComprada;
-                        $producto->setProCantStock($totalyn);
-                        $producto->modificar();
-                        $mensaje = "Su stock es suficiente, puede realizar la compra";
-                        $respuesta['mensaje'] = $mensaje;
-                        $respuesta['respuesta'] = true;
-                        
-                    }else{
-                        $mensaje = "Tiene stock insuficiente";
-                        $respuesta['mensaje'] = $mensaje;
-                        $respuesta['respuesta'] = false;
-                        
-                    }
-                }elseif ($data == 4 || $data == "4") {
-                    //hacer que vuelva a sumar el stock
-                    $totalito = $cantidadtotal + $cantidadComprada;
-                    $producto->setProCantStock($totalito);
-                    $producto->modificar();
-                    $respuesta['respuesta'] = true;
-                }elseif ($data == 3 || $data == "3") {
-                        //se deja igual el stock pero se envia true para que siga el proceso
-                        $respuesta['respuesta'] = true;
-                }else{
-                    $mensaje = "Debe cambiar el estado tipo";
-                    $respuesta['mensaje'] = $mensaje;
-                    $respuesta['respuesta'] = false;
-                }    
-            } 
-        }else{
-            $respuesta['respuesta'] = false;
-            $respuesta['mensaje'] = "No existen items en su compra";  
-        }
-        return $respuesta;    
-    }
-
     public function modificarEstado($idcompraestado, $idcompraestadotipo){
         $objCompraEstado = new Compraestado();
         $arrBusCompraEstado['idcompraestado'] = $idcompraestado;
@@ -298,4 +191,40 @@ class CompraestadoController extends MasterController {
         
         } 
 
+        public function modificacion($data){
+            $objCompraestado = new Compraestado();
+            //esto lo usaremos para personalizar el body del mail
+            $estadotipo = new Compraestadotipo();
+            $arrayB['idcompraestadotipo'] = $data['idcompraestadotipo'];
+            $tim = $estadotipo->buscar($arrayB);
+            $detalledeEstado = $estadotipo->getCetdescripcion();
+            //comprobamos que la cantidad de stock este disponible
+            $haystockDisponible = $objCompraestado->cambiarStocksegunEstado($data);
+            if($haystockDisponible['respuesta']){
+                //si la cantidad de stock esta disponible entonces hacemos el seteo de la fecha
+                $rta = $objCompraestado->modificarFechafin($data);
+                if($rta){
+                    //y hacemos la nueva tupla con la info nueva
+                    $respuestita = $objCompraestado->crearNuevoestadoElegido($data);
+                    if($respuestita['respuesta']){
+                            $mensaje = "Se ha realizado el cambio de estado";
+                            $rtaS = true;
+                    }else{
+                        $mensaje = "No se ha podido realizar la operación";
+                        $rtaS = false;
+                    }
+                }else{
+                    $mensaje = "No se pudo modificar la fecha";
+                    $rtaS = false;
+                }
+            }else{
+                $mensaje = "No hay stock disponible";
+                $rtaS = false;
+            }
+            $retorno['respuesta'] = $rtaS;
+            if(isset($mensaje)){
+                    $retorno['errorMsg'] = $mensaje;
+            }
+            return$retorno;
+        }
 }
