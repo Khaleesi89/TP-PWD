@@ -32,28 +32,7 @@ class MenuController extends MasterController {
         return $salida;
     }
 
-    
 
-    public function listar_menu_padre(){
-        $idmenu = Data::buscarKey('idmenu');
-        $array = Menu::darMenuesSinMenu($idmenu);
-        return $array;
-    }
-
-    public function busqueda(){
-        $arrayBusqueda = [];
-        $idmenu = Data::buscarKey('idmenu');
-        $menombre = Data::buscarKey('menombre');
-        $medescripcion = Data::buscarKey('medescripcion');
-        $idpadre = Data::buscarKey('idpadre');
-        $medeshabilitado = Data::buscarKey('medeshabilitado');
-        $arrayBusqueda = ['idmenu' => $idmenu,
-                          'menombre' => $menombre,
-                          'medescripcion' => $medescripcion,
-                          'idpadre' => $idpadre,
-                          'medeshabilitado' => $medeshabilitado];
-        return $arrayBusqueda;
-    }
 
     public function insertar($data){
         $objMenu = new Menu();
@@ -85,55 +64,7 @@ class MenuController extends MasterController {
         return $response;
     }
 
-    public function buscarId(){          
-        $respuesta['respuesta'] = false;
-        $respuesta['obj'] = null;
-        $respuesta['error'] = '';
-        $arrayBusqueda = [];
-        $arrayBusqueda['idmenu'] = Data::buscarKey('idmenu');
-        $objMenu = new Menu();
-        $rta = $objMenu->buscar($arrayBusqueda);
-        if($rta['respuesta']){
-            $respuesta['respuesta'] = true;
-            $respuesta['obj'] = $objMenu;
-        }else{
-            $respuesta['error'] = $rta;
-        }
-        return $respuesta;        
-    }
-
-    public function eliminar(){
-        $rta = $this->buscarId();
-        $response = false;
-        if($rta['respuesta']){
-            $objMenu = $rta['obj'];
-            $respEliminar = $objMenu->eliminar();
-            if($respEliminar['respuesta']){
-                $response = true;
-            }
-        }else{
-            //no encontro el obj
-            $response = false;
-        }
-        return $response;
-    }
-
-    public function Noeliminar(){
-        $rta = $this->buscarId();
-        $response = false;
-        if($rta['respuesta']){
-            $objMenu = $rta['obj'];
-            $respEliminar = $objMenu->Noeliminar();
-            if($respEliminar['respuesta']){
-                $response = true;
-            }
-        }else{
-            //no encontro el obj
-            $response = false;
-        }
-        return $response;
-    }
-
+ 
     public function getRoles(){
         $arrayBus = [];
         $listaRoles = Rol::listar($arrayBus);

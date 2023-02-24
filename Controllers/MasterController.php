@@ -2,10 +2,6 @@
 
 class MasterController {
     
-    // Uso el trait de data
-    use Data;
-
-
 
     public function getSlashesImg() {
         if( isset($_POST) && count($_POST) >= 0 ){

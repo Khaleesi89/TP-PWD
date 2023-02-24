@@ -16,33 +16,7 @@ class ProductoController extends MasterController{
         
     
     }
-    public function busqueda(){
-        $arrayBusqueda = [];
-        $idproducto = Data::buscarKey('idproducto');
-        $pronombre = Data::buscarKey('pronombre');
-        $sinopsis = Data::buscarKey('sinopsis');
-        $procantstock =Data::buscarKey('procantstock');
-        $autor =Data::buscarKey('autor');
-        $precio = Data::buscarKey('precio');
-        $isbn = Data::buscarKey('isbn');
-        $categoria = Data::buscarKey('categoria');
 
-        $foto = $this->getSlashesImg();
-
-        $prdeshabilitado =Data::buscarKey('prdeshabilitado');
-        $arrayBusqueda = [
-            'idproducto' => $idproducto,
-            'pronombre' => $pronombre,
-            'sinopsis' => $sinopsis,
-            'procantstock' => $procantstock,
-            'autor' => $autor,
-            'precio' => $precio,
-            'isbn' => $isbn,
-            'categoria' => $categoria,
-            'foto' => $foto,
-            'prdeshabilitado' => $prdeshabilitado];
-        return $arrayBusqueda;
-    }
 
     public function listarTodo($array){
         if(empty($array)){
@@ -64,23 +38,6 @@ class ProductoController extends MasterController{
         }
         
         return $array;        
-    }
-
-    public function buscarId(){
-        $respuesta['respuesta'] = false;
-        $respuesta['obj'] = null;
-        $respuesta['error'] = '';
-        $arrayBusqueda = [];
-        $arrayBusqueda['idproducto'] = Data::buscarKey('idproducto');
-        $objProducto = new Producto();
-        $rta = $objProducto->buscar($arrayBusqueda);
-        if($rta['respuesta']){
-            $respuesta['respuesta'] = true;
-            $respuesta['obj'] = $objProducto;
-        }else{
-            $respuesta['error'] = $rta;
-        }
-        return $respuesta;        
     }
 
 
@@ -126,21 +83,7 @@ class ProductoController extends MasterController{
         return $response;
     }
 
-    public function eliminar(){
-        $rta = $this->buscarId();
-        $response = false;
-        if($rta['respuesta']){
-            $objProducto = $rta['obj'];
-            $respEliminar = $objProducto->eliminar();
-            if($respEliminar['respuesta']){
-                $response = true;
-            }
-        }else{
-            //no encontro el obj
-            $response = false;
-        }
-        return $response;
-    }
+    
 
     public function obtenerStockPorId($idproducto){
         $arrBus = [];

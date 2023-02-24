@@ -17,19 +17,6 @@ class CompraController extends MasterController{
     
     }
 
-    public function busqueda(){
-        $arrayBusqueda = [];
-        $idCompra =Data::buscarKey('idcompraestadotipo');
-        $cofecha = Data::buscarKey('cofecha');
-        $idusuario = Data::buscarKey('idusuario');
-        $arrayBusqueda = [
-            'idcompra' => $idCompra,
-            'cofecha' => $cofecha,
-            'idusuario' => $idusuario
-        ];
-        return $arrayBusqueda;
-    }
-
     public function listarTodo($arr){
        
         $arrayTotal = Compra::listar($arr);
@@ -42,65 +29,6 @@ class CompraController extends MasterController{
         return $array;        
     }
 
-
-    public function buscarId() {
-        $idBusqueda = Data::buscarKey( 'idcompraestadotipo' );
-        if( $idBusqueda == false ){
-            // Error
-            $data['error'] = $this->warning( 'No se ha encontrado dicho registro' );
-        } else {
-            // Encontrado!
-            $array['idcompraestadotipo'] = $idBusqueda;
-            $objCompraestadotipo = new Compraestadotipo();
-            $rta = $objCompraestadotipo->buscar( $array['idcompraestadotipo'] );
-            if( $rta['respuesta'] == false ){
-                $data['error'] = $this->manejarError( $rta );
-            } else {
-                $data['array'] = $objCompraestadotipo;
-            }
-            return $data;
-        }
-    }
-
-    public function buscarIdDos(){
-        $rta = false;
-        $idBusqueda = [];
-        $idBusqueda['idcompra'] = Data::buscarKey('idcompra');
-        $objCompra = new Compraestadotipo();
-        $objEncontrado = $objCompra->buscar($idBusqueda);
-        if($objEncontrado['respuesta']){
-            $rta['respuesta'] = true;
-            $rta['obj'] = $objCompra;
-        }
-        return $rta;
-    }
-
-    public function insertar(){
-        $data = $this->busqueda();
-        $objCompraestadotipo = new Compraestadotipo();
-        $objCompraestadotipo->setIdcompraestadotipo($data['idcompraestadotipo']);
-        $objCompraestadotipo->setCetdescripcion($data['cetdescripcion']);
-        $objCompraestadotipo->setCetdetalle($data['cetdetalle']);
-        $rta = $objCompraestadotipo->insertar();
-        return $rta;
-    }
-
-    public function modificar(){
-        $rta = $this->buscarIdDos();
-        $response = false;
-        if($rta['respuesta']){
-            //puedo modificar con los valores
-            $valores = $this->busqueda();
-            $objCompraestadotipo = $rta['obj'];
-            $objCompraestadotipo->cargar($valores['cetdescripcion'], $valores['cetdetalle']);
-            $rsta = $objCompraestadotipo->modificar();
-            if($rsta['respuesta']){
-                //todo gut
-                $response = true;
-            }
-        }
-        return $response;
-    }
 
     //elimina compra completa seria no solo el compra sino tambien el compraestado y los compraitems
     public function eliminar($data){

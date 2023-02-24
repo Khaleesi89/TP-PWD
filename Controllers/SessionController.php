@@ -21,17 +21,6 @@ class SessionController extends MasterController {
         return $_SESSION['idusuario'];
     }
 
-    public function existenCredenciales() {
-        $sevalido = false;
-        $usnombre = Data::buscarKey('usnombre');
-        $uspass = Data::buscarKey('uspass');
-        if (($usnombre != false && $uspass != false) || (isset($_SESSION['usnombre']))) {
-            //hay credenciales enviadas
-            $_SESSION['usnombre'] = $usnombre;
-            $sevalido = true;
-        }
-        return $sevalido;
-    }
 
     /** Identifica si la sesion esta activa
      * @return bool
@@ -51,9 +40,9 @@ class SessionController extends MasterController {
      * en la base de datos 
     * @return bool
     */
-    public function validarCredenciales() {
-        $usnombre = Data::buscarKey('usnombre');
-        $uspass = Data::buscarKey('uspass');
+    public function validarCredenciales($data) {
+        $usnombre = $data['usnombre'];
+        $uspass = $data['uspass'];
         if( ($usnombre != false && $uspass != false) || isset($_SESSION['usnombre']) ){
             
             //a buscar

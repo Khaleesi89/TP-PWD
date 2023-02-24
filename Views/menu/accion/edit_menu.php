@@ -5,7 +5,6 @@ $obtenerURL = explode('/', $_SERVER['REQUEST_URI']);
 $obtenerURL = array_reverse($obtenerURL);
 $datos = explode("=",$obtenerURL[0]);
 $idmenu = $datos[1];
-//$data = Data::buscarKey('idusuario'); */
 $data = data_submitted();
 $data['idmenu'] = $idmenu;
 if($data != null){

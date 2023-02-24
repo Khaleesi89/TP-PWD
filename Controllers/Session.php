@@ -41,69 +41,6 @@ class Session extends MasterController {
         $_SESSION['usRol'] = $usRol;
     }
 
-    /**
-     * Método que actualiza las variables de sesión con valores ingresados
-     * @param $usuNombre
-     * @param $usuPass
-     */
-    public function iniciar( $usnombre, $uspass ){
-        $bandera = false;
-        $objUsuarioCon = new UsuarioController();
-        $objUsuarioRolCon = new UsuarioRolController();
-        $this->setUsnombre($usnombre);
-        $this->setUspass($uspass);
-        $array = [
-            'usnombre' => $usnombre,
-            'uspass' => $uspass,
-            'usdeshabilitado' => null
-        ];
-        $objUsu = $objUsuarioCon->buscarObjUsuario();
-        $busqueda = $objUsuarioCon->listarTodo( $array );
-        if( count($busqueda) > 0 ){
-            $usuarioLogueado = $busqueda[0];
-            $idusuario = $usuarioLogueado->getIdusuario();
-            $usnombre = $usuarioLogueado->getUsnombre();
-            $uspass = $usuarioLogueado->getUspass();
-
-            $nomus = $objUsuarioRolCon->buscarNombreUsuario();
-            if( $nomus != null ){
-                $listado = $objUsuarioRolCon->listarTodo( $nomus );
-                if( $usnombre == $nomus ){
-                    foreach( $listado['arrayHTML'] as $key => $value ){
-                        if( $value['nombre'] == $usnombre  ){
-                            $rol = $value['rol'];
-                        }
-                    }
-                }
-            }
-            $this->setIdusuario( $idusuario );
-            $this->setUsnombre( $usnombre );
-            $this->setUspass( $uspass );
-            $this->setUsRol( $rol );
-        }
-        return $bandera;
-    }
-
-    /**
-     * Método que valida si la sesión actual tiene usuario y pass válidos.
-     * @return boolean
-     */
-    public function validar() {
-        $validado['rta'] = false;
-        $usuario = $this->getUsnombre();
-        $pass = $this->getUspass();
-        $controlUsuario = new UsuarioController();
-        $lista = $controlUsuario->buscarId();
-        $usnombrelista = $lista['obj']->getUsnombre();
-        $uspasslista = $lista['obj']->getUspass();
-        if (trim($usnombrelista) == trim($usuario) && $uspasslista == $pass) {
-            $validado['rta'] = true;
-        } else {
-            $validado['error'] = 'Credenciales incorrectas';
-        }
-        return $validado;
-    }
-
 
     /**
      * Método que verifica si la sesión esta activa o no

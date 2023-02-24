@@ -2,12 +2,11 @@
 require_once('../../config.php');
 
 $objUsuarioCon = new UsuarioController;
-$gola = $objUsuarioCon->buscarObjUsuario2();
-
-
-if($gola['rta']){
+$data = data_submitted();
+$gola = $objUsuarioCon->buscarUsuario($data);
+if($gola){
     $objSession = new SessionController();
-    $valido = $objSession->validarCredenciales();
+    $valido = $objSession->validarCredenciales($data);
     if($valido){
         $url = $PRODUCTOS;
         

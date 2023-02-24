@@ -4,20 +4,6 @@
 class CompraestadoController extends MasterController {
     use Errores;
 
-    //crea array para la busqueda
-    public function busqueda(){
-        $arrayBusqueda = [];
-        $idcompraestado = Data::buscarKey('idcompraestado');
-        $idcompra = Data::buscarKey('idcompra');
-        $idcompraestadotipo = Data::buscarKey('idcompraestadotipo');
-        $cefechaini = Data::buscarKey('cefechaini');
-        $arrayBusqueda = ['idcompraestado' => $idcompraestado,
-                          'idcompra' => $idcompra,
-                          'idcompraestadotipo' => $idcompraestadotipo,
-                          'cefechaini' => $cefechaini,
-                          ];
-        return $arrayBusqueda;
-    }
 
     public function listarTodo($arrayBusqueda){
         $arrayTotal = Compraestado::listar($arrayBusqueda);
@@ -30,23 +16,6 @@ class CompraestadoController extends MasterController {
         return $array;        
     }
 
-    public function buscarId(){
-        $respuesta['respuesta'] = false;
-        $respuesta['obj'] = null;
-        $respuesta['error'] = '';
-        $arrayBusqueda = [];
-        $arrayBusqueda['idcompraestado'] = Data::buscarKey('idcompraestado');
-        $objCompraestado = new Compraestado();
-        $rta = $objCompraestado->buscar($arrayBusqueda);
-        if($rta['respuesta']){
-            $respuesta['respuesta'] = true;
-            $respuesta['obj'] = $objCompraestado;
-        }else{
-            $respuesta['error'] = $rta;
-            
-        }
-        return $respuesta;        
-    }
 
     public function insertarCompraEstadoNueva($idcompra){
         $objCompraEstado = new Compraestado();
@@ -82,72 +51,6 @@ class CompraestadoController extends MasterController {
         return $respo;
     }
 
-    //
-    public function insertar(){
-        $data = $this->busqueda();
-        $objCompraestado = new Compraestado();
-        $objCompraestado->setIdcompraestado($data['idcompraestado']);
-        $objCompra = new Compra();
-        $objCompra->buscar($data['idcompra']);
-        $objCompraestado->setObjCompra($objCompra);
-        $objCompraestadotipo = new Compraestado();
-        $objCompraestadotipo->buscar($data['idcompraestadotipo']);
-        $objCompraestado->setObjCompraestadotipo($objCompraestadotipo);
-        $objCompraestado->setCefechaini($data['cefechaini']);
-        $objCompraestado->setCefechafin($data['cefechafin']);
-        $rta = $objCompraestado->insertar();
-        return $rta;
-    }
-
-    
-
-    public function modificar(){
-        $rta = $this->buscarId();
-        $response = false;
-        if($rta['respuesta']){
-            //puedo modificar con los valores
-            $valores = $this->busqueda();
-            
-            $objCompraestado = $rta['obj'];
-
-            $objCompra = new Compra();
-            $arridcompra = ['idcompra' => $valores['idcompra']];
-            $objCompra->buscar($arridcompra);
-            $objCompraestado->setObjCompra($objCompra);
-
-            $objCompraestadotipo = new Compraestadotipo();
-            $arridcompraestadotpo = ['idcompraestadotipo' => $valores['idcompraestadotipo']];
-            $objCompraestadotipo->buscar($arridcompraestadotpo);
-            $objCompraestado->setObjCompraestadotipo($objCompraestadotipo);
-
-            $rsta = $objCompraestado->modificar();
-            if($rsta['respuesta']){
-                //todo gut
-                $response = true;
-            }
-        }else{
-            //no encontro el obj
-            $response = false;
-        }
-        return $response;
-    }
-
-
-    public function eliminar(){
-        $rta = $this->buscarId();
-        $response = false;
-        if( $rta['respuesta'] ){
-            $objProducto = $rta['obj'];
-            $respEliminar = $objProducto->eliminar();
-            if( $respEliminar['respuesta'] ){
-                $response = true;
-            }
-        } else {
-            //no encontro el obj
-            $response = false;
-        }
-        return $response;
-    }
 
     //SACA LA PRIMERA COMPRA QUE TIENE ESTADO 1 Y NULL
     //NO DISTINGUE USUARIOS
@@ -168,23 +71,6 @@ class CompraestadoController extends MasterController {
     
     } 
 
-    //ponemos la fecha de hoy para el cambio de estado
-    public function setearfecha(){
-        $rta = $this->buscarId();
-        $sepudo = [];
-        $hoy = date("Y-m-d H:i:s");
-        if(!is_null($rta['obj'])){
-            $objetoCompraestado = $rta['obj'];
-            $objetoCompraestado->setCefechafin($hoy);
-            $sepudo['respuesta'] = true;
-            $sepudo['objmodif'] = $objetoCompraestado;
-        }else{
-            $sepudo['respuesta'] = false;
-            
-        }
-        return $sepudo;
-        
-    }
 
     //para modificar la fecha y modificarla en la base de datos
     public function modificarFechafin(){
@@ -377,12 +263,6 @@ class CompraestadoController extends MasterController {
             }
             return $idcompraIniciada;
         }
-
-
-
-
-
-
 
         //EXTRAEMOS DEL ARRAY DE LAS COMPRAS CON FECHAFIN NULL SOLOO 
         //NOS QUEDAMOS CON LAS INICIADAS
