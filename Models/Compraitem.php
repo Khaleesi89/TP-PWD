@@ -371,4 +371,18 @@ class Compraitem extends db{
 		}
 		return $salida;
 	}
+
+
+
+	//FUNCION PARA SABER EL STOCK TOTAL
+	public function stockTotal($idproducto)
+    {
+        $producto['idproducto'] = $idproducto;
+        $objetoProducto = new Producto();
+        $busquedaProducto = $objetoProducto->buscar($producto);
+        if ($busquedaProducto) {
+            $cantStock = $objetoProducto->getProCantStock();
+        }
+        return $cantStock;
+    }
 }

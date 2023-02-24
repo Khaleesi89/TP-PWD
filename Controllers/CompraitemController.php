@@ -51,17 +51,6 @@ class CompraitemController extends MasterController
     
     }
 
-    public function stockTotal($idproducto)
-    {
-        $producto['idproducto'] = $idproducto;
-        $objetoProducto = new Producto();
-        $busquedaProducto = $objetoProducto->buscar($producto);
-        if ($busquedaProducto) {
-            $cantStock = $objetoProducto->getProCantStock();
-        }
-        return $cantStock;
-    }
-
     public function cargarVentaDeProducto($idcompra, $idproducto, $cicantidad)
     {
         $objCompraItem = new CompraItem();
@@ -135,5 +124,37 @@ class CompraitemController extends MasterController
     
     }
 
+    //funcion para modificar la cantdiad de stock en compra item
+    public function modificarCantidad($data){
+        $objCompraItem = new Compraitem();
+        $arrayBusc['idcompraitem'] = $data['idcompraitem'];
+        $cantidad = $data['cicantidad'];
+        $rtaS = $objCompraItem->buscar($arrayBusc);//objeto original
+        
+        if ($rtaS != null) {
+            //FUNCION EN CONTROLADOR PAR AQUE TRAIGA LA CANTIDAD DE PRODUCTO
+            //FUNCION PARA COMPRAR 
+            $cantTotal = $objCompraItem->stockTotal($data['idproducto']);
+            if ($cantTotal >= $cantidad) {
+                $objCompraItem->setCicantidad($cantidad);
+                $rta = $objCompraItem->modificar();
+                if ($rta) {
+                    $mensaje = "Se modificó su cantidad de productos";
+                    $rta = true;
+                }else{
+                    $mensaje = "No se modificó la cantidad de productos";
+                    $rta = false;
+                }
+            } else {
+                $mensaje = 'No hay en stock esa cantidad';
+                $rta = false;
+            }
+        }
+        $retorno['respuesta'] = $rta;
+        if (isset($mensaje)) {
+        $retorno['errorMsg'] = $mensaje;
+        }
+        return $retorno;
+    }
     
 }
