@@ -1,26 +1,6 @@
 <?php
 require_once('../templates/preheader.php');
 
-$objCompCont = new CompraController();
-
-if( $objSession->getUsnombre() != null ){
-    try {
-        $rol = $objSession->getRolPrimo();
-        if ($rol != '') {
-            if ($rol == 'Admin' || $rol == 'Deposito') {
-                $arrBuPro = [];
-                $lista = $objCompCont->listarTodo($arrBuPro);
-            } elseif ($rol == 'Cliente') {
-                $arrBuPro['idusuario'] = $objSession->getIdusuario();
-                $lista = $objCompCont->listarTodo($arrBuPro);
-            }
-        }
-    } catch (\Throwable $th) {
-        $rol = '';
-        $lista = []; //  ['idproducto' => '', 'pronombre' => '', 'sinopsis'=>'', 'procantstock'=>'', 'autor'=>'', 'precio'=>'', 'isbn'=>'', 'categoria'=>''];
-    }
-}
-
 ?>
 
 <div class="container d-flex justify-content-center mt-5 mb-5">

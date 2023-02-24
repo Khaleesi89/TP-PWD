@@ -1,59 +1,6 @@
 <?php
 
 require_once('../templates/preheader.php');
-$objCompraItemCon = new CompraitemController();
-try {
-    $rol = $objSession->getRolPrimo();
-    
-    
-    $list = [];
-    if($rol == 'Admin' || $rol == 'Deposito'){
-        $arrBuCI = [];
-        $list = $objCompraItemCon->listarTodo($arrBuCI);
-        
-    }else{
-        //averiguar la compra que tiene...solo una sola compra activa se permite
-        $idusuario = $objSession->getIdusuario();
-        
-        if($idusuario != NULL){
-            //averiguar la compra que tenga activa
-            $objCompraCon = new CompraController();
-
-            $arraycomprasPorUsuario = $objCompraCon->buscarCompraSConIdusuario($idusuario);
-            $arrayconLosId = $objCompraCon->soloId($arraycomprasPorUsuario);
-            
-            if($arraycomprasPorUsuario != NULL){
-                //ver que la compra este iniciada 
-                $objCompraestadoCon = new CompraestadoController();
-                $sacandolsComprasActivas = $objCompraestadoCon->sacandoComprasActivas($arrayconLosId);
-                if(!empty($sacandolsComprasActivas['array'])){
-                    $list = $sacandolsComprasActivas['array'];   
-                }
-            }else{
-                $list = [];
-            }
-        }else{
-            $list = [];
-        }
-        if(count($list) > 0){
-            foreach ($list as $key => $value) {
-                $objProd = $value->getObjProducto();
-                $objCompra = $value->getObjCompra();
-                $arrDat = ['idcompraitem' => $value->getIdcompraitem(), 
-                'idproducto' => $objProd->getIdproducto(), 
-                'pronombre' => $objProd->getPronombre(), 
-                'idcompra' => $objCompra->getIdcompra(), 
-                'cicantidad' => $value->getCicantidad()];
-                array_push($list, $arrDat);
-            }
-           
-        }
-    }
-} catch (\Throwable $th) {
-    $rol = '';
-    $list = [];
-}
-
 
 ?>
 
@@ -103,13 +50,6 @@ try {
 
 <script>
     var url;
-    /*
-    function newProducto(){
-        $('#dlg').dialog('open').dialog('center').dialog('setTitle', 'Nuevo producto');
-        $('#fm').form('clear');
-        url='accion/insertar_producto.php';
-    }
-    */
     function editCantidad() {
         //dg es la tabla y getselect es el que esta seleccionado
         var row = $('#dg').datagrid('getSelected');

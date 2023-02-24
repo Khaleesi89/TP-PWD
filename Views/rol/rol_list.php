@@ -1,25 +1,6 @@
 <?php
 require_once('../templates/preheader.php');
-$objRolCon = new RolController();
-try {
-    $rol = $objSession->getRolPrimo();
-    if ($rol != '') {
-        if ($rol == 'Admin') {
-            $list = $objRolCon->listarTodo();
-            $lista = [];
-            foreach ($list as $key => $value) {
-                $datos = $value->dameDatos();
-                array_push($lista, $datos);
-            }
-        } elseif ($rol == 'Cliente' || $rol == 'Deposito') {
-            $lista = [];
-        }
-    }
-} catch( \Throwable $th ){
-    $rol = '';
-    $lista = []; //  ['idproducto' => '', 'pronombre' => '', 'sinopsis'=>'', 'procantstock'=>'', 'autor'=>'', 'precio'=>'', 'isbn'=>'', 'categoria'=>''];
-}
-
+$rol = $objSession->getRolPrimo();
 ?>
 <div class="container-fluid p-5 my-1 d-flex justify-content-center rol">
     <div class="row">

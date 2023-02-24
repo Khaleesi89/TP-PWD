@@ -13,10 +13,7 @@ class ProductoController extends MasterController{
             $rta = false;
         }
         return $rta;
-        
-    
     }
-
 
     public function listarTodo($array){
         if(empty($array)){
@@ -34,9 +31,7 @@ class ProductoController extends MasterController{
             }else{
                 $array = [];
             }
-
         }
-        
         return $array;        
     }
 
@@ -97,4 +92,97 @@ class ProductoController extends MasterController{
         }
         return $respuesta;
     }
+
+
+    //FUNCION EN EL PROCESO DE COMPRA
+
+    public function inicioCompra($data,$objSession){
+        $cicantidad = $data['cicantidad'];
+        $cantStock = $data['procantstock'];
+        $idprod = $data['idproducto'];
+        //Comprobar stock
+        if ($cicantidad <= $cantStock) {
+            //buscar si hay una compra iniciada
+            $idusuario = $objSession->getIdusuario();//obtengo id usuario
+            //obtener compra con idusuario
+            $objCompra = new Compra();
+            $ComprUsuario = $objCompra->buscarCompraSConIdusuario($idusuario);
+            //true si esta vacio y false si no
+            if(!empty($ComprUsuario)){
+                //ENTRA ACA SI TIENE COMPRAS iniciadas o finalizadas
+                //obtener solo los id
+                $arrayconLosId = $objCompra->soloId($ComprUsuario);
+                $objCompraestado = new Compraestado();
+                //VAN LAS COMPRAS QUE TIENEN FECHAFIN = NULL
+                $sacandolsComprasActivas = $objCompraestado->sacandoComprasActivas($arrayconLosId);
+                //ESTO ES TRUE -> HAY COMPRAS DEL USUARIO ANTERIORMENTE
+                if($sacandolsComprasActivas['respuesta']){
+                    $comprAct = $sacandolsComprasActivas['array'];
+                    //AHORA TENGO QUE SACAR LAS QUE TIENEN SOLO COMPRAESTADO1 pero SOLO DEVUELVE 1
+                    //devuelve el id de la compra en estado 1 y es true si no hay compras activas
+                    $unaCompraestadoinicial = $objCompraestado->soloEstadoInicial($comprAct);
+                    if($unaCompraestadoinicial){
+                        //COMPRA CON ID EN ESTADO INICIADA ENTONCES SOLO HACE EL COMPRAITEM
+                        
+                        $resp = $objCompra->compraConCompraIniciada($unaCompraestadoinicial,$idusuario,$idprod,$cicantidad);
+                        if($resp){
+                            $mensaje = "su compra se realizó correctamente";
+                            $respuesta = true;
+                        }else{
+                            $mensaje = "Hay un error en su compra";
+                            $respuesta = false;
+                        }
+                        $retorno = [];
+                        $retorno['respuesta'] = $respuesta;
+                        if (isset($mensaje)) {
+                            $retorno['errorMsg'] = $mensaje;
+                        }
+                    }else{ 
+                        //SIN COMPRA EN ESTADO INICIADA ENTONCES CREA UNA NUEVA COMPRA
+                        $resp = $objCompra->crearCompra($idusuario,$idprod,$cicantidad);
+                        if($resp){
+                            $mensaje = "su compra se realizó correctamente";
+                            $respuesta = true;
+                        }else{
+                            $mensaje = "Hay un error en su compra";
+                            $respuesta = false;
+                        }
+                        $retorno = [];
+                        $retorno['respuesta'] = $respuesta;
+                        if (isset($mensaje)) {
+                            $retorno['errorMsg'] = $mensaje;
+                        }
+                    }
+                }
+            }else{
+                //si no hay compras para el usuario
+                //LO QUE HARA SI no tenia compras anteriormente nuevo usuario
+            
+                $resp = $objCompra->crearCompra($idusuario,$idprod,$cicantidad);
+                if($resp){
+                    $mensaje = "su compra se realizó correctamente";
+                    $respuesta = true;
+                }else{
+                    $mensaje = "Hay un error en su compra";
+                    $respuesta = false;
+                }
+                $retorno = [];
+                $retorno['respuesta'] = $respuesta;
+                if (isset($mensaje)) {
+                    $retorno['errorMsg'] = $mensaje;
+                }
+            }
+        } else {
+            $mensaje = "El stock de compra ingresado es superior al de depósito";
+            $respuesta = false;
+        }
+        $retorno = [];
+        $retorno['respuesta'] = $respuesta;
+        if (isset($mensaje)) {
+            $retorno['errorMsg'] = $mensaje;
+        }
+        return $retorno;
+    }
+
+
 }

@@ -156,5 +156,33 @@ class CompraitemController extends MasterController
         }
         return $retorno;
     }
-    
+
+
+    //FUNCION PARA LISTAR LOS PRODUCTOS DEL CARRITO
+    public function sacarCarrito($idusuario){
+        $arreglo_salid = [];
+        //OBTENCION DEL TOTAL DE LAS COMPRAS
+        $objCompra = new Compra();
+        $arraycompras = $objCompra->buscarCompraSConIdusuario($idusuario);
+        //LOS ID DE LAS todas COMPRAS del usuario
+        $arrayconLosId = $objCompra->soloId($arraycompras);
+        //BUSCAMOS CON COMPRAESTADO PARA QUE SE MUESTRE SOLO LAS INICIADAS
+        $objCompraestado = new Compraestado();
+        //VAN LAS COMPRAS QUE TIENEN FECHAFIN = NULL
+        $sacandolsComprasActivas = $objCompraestado->sacandoComprasActivas($arrayconLosId);
+        $comprAct = $sacandolsComprasActivas['array'];
+        //todas las compras iniciadas
+        $sololasIniciadas = $objCompraestado->soloLasIniciadas($comprAct);
+
+        //SACAR LAS ID DE LAS COMPRAS iniciadas
+        $arrayconLosIdcomprasActivas = $objCompra->soloId($sololasIniciadas);
+        //BUSCAMOS TODOS LOS COMPRAITEM Y LOS COMPARAMOS CON EL ARRAY DE LAS ID COMPRAS ACTIVAS
+        $objConCompraitem = new CompraitemController();
+        $arrayCompItem = $objConCompraitem->sacandoComprasIniciadas($arrayconLosIdcomprasActivas);
+        foreach ($arrayCompItem as $key => $value) {
+            $nuevoElemen = $value->dameDatosOk();
+            array_push($arreglo_salid, $nuevoElemen);
+        }
+        return $arreglo_salid;
+    }  
 }

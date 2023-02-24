@@ -1,27 +1,7 @@
 <?php
 
 require_once('../templates/preheader.php');
-
-
-$objConPro = new ProductoController();
-
-if( $objSession->getUsnombre() != null ){
-    try {
-        $rol = $objSession->getRolPrimo();
-        if ($rol != '') {
-            if ($rol == 'Admin' || $rol == 'Deposito') {
-                $arrBuPro = [];
-                $lista = $objConPro->listarTodo($arrBuPro);
-            } elseif ($rol == 'Cliente') {
-                $arrBuPro['prdeshabilitado'] = NULL;
-                $lista = $objConPro->listarTodo($arrBuPro);
-            }
-        }
-    } catch (\Throwable $th) {
-        $rol = '';
-        $lista = []; //  ['idproducto' => '', 'pronombre' => '', 'sinopsis'=>'', 'procantstock'=>'', 'autor'=>'', 'precio'=>'', 'isbn'=>'', 'categoria'=>''];
-    }
-}
+$rol = $objSession->getRolPrimo();
 
 ?>
 
@@ -201,17 +181,7 @@ if( $objSession->getUsnombre() != null ){
         if (row) {
             $('#dlg1').dialog('open').dialog('center').dialog('setTitle', 'Comprar');
             cantStock = row.procantstock;
-            //data-options
-            //label:'Cantidad a comprar:',labelPosition:'top', min:0
             document.getElementById('cicantidad').max = cantStock;
-            /* $('#cicantidad').data-options({
-                "label": 'Cantidad a comprar:',
-                "labelPosition": 'left',
-                "max": cantStock, // substitute your own
-                "min": 0 // values (or variables) here
-            }); */
-            console.log(cantStock);
-            //document.getElementById('cicantidad').max = cantStock;
             $('#fm1').form('load', row);
             url = 'accion/edit_stock.php?idproducto=' + row.idproducto;
         }
@@ -225,7 +195,6 @@ if( $objSession->getUsnombre() != null ){
             },
             success: function(result) {
                 var result = eval('(' + result + ')');
-                //alert('Volvio servidor');
                 if (!result.respuesta) {
                     $.messager.show({
                         title: 'Error',
@@ -247,7 +216,6 @@ if( $objSession->getUsnombre() != null ){
                     $.post('accion/destroy_producto.php?idproducto=' + row.idproducto, {
                         idproducto: row.id
                     }, function(result) {
-                        //alert('Volvio servidor');
                         if (result.respuesta) {
                             $('#dg').datagrid('reload');
                         } else {

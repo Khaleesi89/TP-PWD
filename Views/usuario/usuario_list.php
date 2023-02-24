@@ -1,27 +1,6 @@
 <?php
 require_once('../templates/preheader.php');
-$objUsuarioController = new UsuarioController();
-$objUsuRolController = new UsuarioRolController();
-$arrayRoles = $objUsuRolController->getRoles();
-
-try {
-    $rol = $objSession->getRolPrimo();
-    if($rol != ''){
-        if($rol == 'Admin'){
-            $array = [];
-            $lista = $objUsuarioController->listarTodo($array );
-        }elseif($rol == 'Cliente' || $rol == 'Deposito'){
-            $idusuario = $objSession->getIdusuario();
-            $arrBuPro['idusuario'] = $idusuario;
-            $lista = $objUsuarioController->listarTodo($arrBuPro);
-        }
-    } else {
-        $lista = [];
-    }
-} catch (\Throwable $th) {
-    $lista = [];
-}
-
+$rol = $objSession->getRolPrimo();
 ?>
 
 <div class="container-fluid p-5 my-1 d-flex justify-content-center usuario">

@@ -1,5 +1,4 @@
 <?php
-/* require_once('../templates/header2.php'); */
 require_once( '../../../config.php' );
 $objUsuarioController = new UsuarioController();
 $objUsuarioRolController = new UsuarioRolController();
@@ -13,7 +12,6 @@ try {
             $array = [];
             $lista = $objUsuarioController->listarTodo($array);
         }elseif($rol == 'Cliente' || $rol == 'Deposito'){
-            //$arrBuPro['usdeshabilitado'] = NULL;
             $idusuario = $objSession->getIdusuario();
             $arrBuPro['idusuario'] = $idusuario;
             $lista = $objUsuarioController->listarTodo($arrBuPro);
