@@ -310,4 +310,55 @@ class Menurol extends db{
     
         return $data;
     }
+
+
+    public function nuevoMenuRol($data,$arrayIdDiferente){
+        foreach ($arrayIdDiferente as $key => $value) {//value es idrol
+            //tengo el idrol
+            $data['idrol'] = $value;
+            //creo los objetos
+            $menuRol = new Menurol();
+            $objRol = new Rol();
+            $objMenu = new Menu();
+            //voy a buscar esos objetos Rol y Menu
+            $arrayBus['idrol'] = $data['idrol'];
+            $canDoit = $objRol->buscar($arrayBus);
+            $busca['idmenu'] = $data['idmenu'];
+            $sePudo = $objMenu->buscar($busca);
+            $menuRol->cargar($objMenu,$objRol);
+            $respuesta = $menuRol->insertar();
+            if($respuesta['respuesta']){
+                $salida = true;
+            }else{
+                $salida = false;
+            }
+        }
+        return $salida;
+    }
+
+
+
+    public function eliminarMenuRol($data,$arrayIdDiferente){
+        foreach ($arrayIdDiferente as $key => $value) {
+            $arrayBus['idrol'] = $value;
+            $menuRol = new Menurol();
+            $arrayBus['idmenu'] = $data['idmenu'];
+            $encontro = $menuRol->buscar($arrayBus);
+            if($encontro['respuesta']){
+                $rta = $menuRol->eliminar();
+                if($rta['respuesta']){
+                    $salida = true;
+                }else{
+                    $salida = false;
+                }
+            }else{
+                $salida = false;
+            }
+        }        
+        
+        return $salida;
+    }
+
+
+
 }

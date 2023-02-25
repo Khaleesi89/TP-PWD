@@ -296,4 +296,52 @@ class Usuariorol extends db {
         $objRol = null;
         return $data;
     }
+
+
+    public function nuevoUsuarioRol($data,$arrayIdDiferente){
+        foreach ($arrayIdDiferente as $key => $value) {//value es idrol
+            //tengo el idrol
+            $data['idrol'] = $value;
+            //creo los objetos
+            $usuarioRol = new Usuariorol();
+            $objRol = new Rol();
+            $objUsuario = new Usuario();
+            //voy a buscar esos objetos Rol y Menu
+            $arrayBus['idrol'] = $data['idrol'];
+            $canDoit = $objRol->buscar($arrayBus);
+            $busca['idusuario'] = $data['idusuario'];
+            $sePudo = $objUsuario->buscar($busca);
+            $usuarioRol->cargar($objUsuario,$objRol);
+            $respuesta = $usuarioRol->insertar();
+            if($respuesta['respuesta']){
+                $salida = true;
+            }else{
+                $salida = false;
+            }
+        }
+        return $salida;
+    }
+
+
+    public function eliminarUsuarioRol($data,$arrayIdDiferente){
+        foreach ($arrayIdDiferente as $key => $value) {
+            $arrayBus['idrol'] = $value;
+            $usuarioRol = new Usuariorol();
+            $arrayBus['idusuario'] = $data['idusuario'];
+            $encontro = $usuarioRol->buscar($arrayBus);
+            if($encontro['respuesta']){
+                $rta = $usuarioRol->eliminar();
+                if($rta['respuesta']){
+                    $salida = true;
+                }else{
+                    $salida = false;
+                }
+            }else{
+                $salida = false;
+            }
+        }        
+        
+        return $salida;
+    }
+
 }

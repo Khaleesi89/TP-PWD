@@ -428,12 +428,16 @@ class Compraestado extends db{
         $arrayBusquedasT ['idcompraestadotipo'] = $data['idcompraestadotipo'];
         $objCompraestadotipo = new Compraestadotipo();
         $objCompraestadotipo->buscar($arrayBusquedasT);
-        //$estado =  $objCompraestadotipo->getCetdescripcion();
+        //DATOS PARA EL ENVIO DEL MAIL
+        $estadoActual = $objCompraestadotipo->getCetdescripcion();
+        $email = $objCompra->getObjUsuario()->getUsmail();
+        $mensaje = "Su compra ha pasado al estado de ".$estadoActual;
         //cargo el nuevo compraestado con el estadotipo nuevo
         $this->cargar($objCompra, $objCompraestadotipo);
         $rta = $this->insertar();
         if($rta){
             $respuesta ['respuesta'] = true;
+            $respupu = Mail::enviarMail($email, $mensaje);
         }else{
             $respuesta ['respuesta'] = false;
         }

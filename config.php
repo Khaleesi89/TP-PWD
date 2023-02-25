@@ -2,7 +2,7 @@
 header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: no-cache, must-revalidate');
 
-//define('URL', 'http://localhost/'); HICE CAMBIO ACA..DESCOMENTARLO
+define('URL', 'http://localhost/'); 
 
 ////////////////////////
 // configuracion app //
@@ -40,8 +40,9 @@ spl_autoload_register(function ($class_name){
         $GLOBALS['ROOT'].'Vendor/',
         $GLOBALS['ROOT'].'Views/',
         $GLOBALS['ROOT'].'Views/templates',
-        $GLOBALS['ROOT'].'Vendor/phpmailer/phpmailer/src',
-        
+        //$GLOBALS['ROOT'].'Vendor/phpmailer/phpmailer/src',
+        $GLOBALS['ROOT'].'clases/phpmailer/',
+        $GLOBALS['ROOT'].'clases/'  
 
     );
     // print_r($directorys);
