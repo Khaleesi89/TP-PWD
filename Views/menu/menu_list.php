@@ -1,22 +1,5 @@
 <?php
 require_once('../templates/preheader.php');
-$objMenuCon = new MenuController();
-try {
-    $rol = $objSession->getRolPrimo();
-    if( $rol != '' ){
-        if( $rol == 'Admin' ){
-            $lista = $objMenuCon->listarTodo();
-        } elseif( $rol == 'Cliente' || $rol == 'Deposito' ){
-            $lista = [];
-        }
-    }
-} catch( \Throwable $th ){
-    $rol = '';
-    $lista = []; //  ['idproducto' => '', 'pronombre' => '', 'sinopsis'=>'', 'procantstock'=>'', 'autor'=>'', 'precio'=>'', 'isbn'=>'', 'categoria'=>''];
-}
-//Hacer controlador de menu y traer todos los menues
-
-//$arrayBus['medeshabilitado'] = NULL;
 $objUsuRolCon = new UsuarioRolController();
 $arrayRoles = $objUsuRolCon->getRoles();
 

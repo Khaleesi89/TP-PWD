@@ -61,7 +61,7 @@ $arrayRoles = $objUsuRolController->getRoles();
     <form id="fm1" method="POST" novalidate style="margin:0;padding:20px 50px;" enctype="multipart/form-data">
         <h3>Información de Roles</h3>
         <?php
-        //$stringArr = "<script>let arrayF = [";
+        
         foreach ($arrayRoles as $key => $value) {
             $texto = $value->dameDatos();
             $id = $texto['idrol'];
@@ -71,11 +71,9 @@ $arrayRoles = $objUsuRolController->getRoles();
                 <label for=\"$id\" class=\"textbox-label\">$rodescripcion:</label>
                 <input id=\"rol$id\" type=\"checkbox\" name=\"rol$id\">
                 </div>";
-            //$stringArr .= "'rol$id',";
+            
         }
-        /* $stringArr = substr($stringArr, 0, -1);
-        $stringArr .= '];</script>';
-        echo $stringArr; */ //<script>let arrayF = ['rol1','rol2','rol3'];</script>
+        
         ?>
     </form>
     <div id="dlg1-buttons">
@@ -105,7 +103,7 @@ $arrayRoles = $objUsuRolController->getRoles();
     }
 
     function cargarDatos(datos) {
-        console.log($datos)//esto agregue yo
+        //console.log($datos)//esto agregue yo
         arralgo = Object.values(datos.data);
         arrkeys = Object.keys(datos.data);
         for (key in arrkeys) {
@@ -124,7 +122,6 @@ $arrayRoles = $objUsuRolController->getRoles();
             if (arralgo[key] == 'true') {
                 document.getElementById(algo).click();
             }
-            document.getElementById(algo).disabled = true;
         }
     }
 

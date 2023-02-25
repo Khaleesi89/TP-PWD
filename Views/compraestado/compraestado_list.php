@@ -30,7 +30,7 @@ $compraEstadoTipoList = $objCompraEstadoTipoCon->listarTodo();
                 <?php
                 if ($rol == 'Admin' || $rol == 'Deposito') {
                     echo "<a href=\"javascript:void(0)\" class=\"easyui-linkbutton\" iconCls=\"icon-edit\" plain=\"true\" onclick=\"editCompraEstado()\">Editar estado de compra</a>
-                        <a href=\"javascript:void(0)\" class=\"easyui-linkbutton\" iconCls=\"icon-remove\" plain=\"true\" onclick=\"destroyCompraEstado()\">Destroy estado de compra</a>";
+                        ";
                 }
                 ?>
             </div>
