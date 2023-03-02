@@ -6,16 +6,20 @@ $rta = $objConCompraItem->buscar($data);
 if($rta){
     $salida = $rta->eliminar();
     if($salida['respuesta']){
-        $mensaje = "Eliminación exitosa";
         $finish = true;
+        $mensaje = "Eliminación exitosa";
+        
     }else{
-        $mensaje = "La acción no pudo concretarse";
         $finish = false;
+        $mensaje = "La acción no pudo concretarse";
+       
     }
 }else{
-    $mensaje = "La acción no pudo concretarse";
     $finish = false;
+    $mensaje = "La acción no pudo concretarse";
+    
 }
+$retorno['respuesta'] = $finish;
 if(isset($mensaje)){
     $retorno['errorMsg'] = $mensaje;
 }

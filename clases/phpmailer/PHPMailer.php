@@ -19,8 +19,8 @@
  * FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-use Exception;
-use SMTP;
+//use Exception;
+//use SMTP;
 
 /**
  * PHPMailer - PHP email creation and transport class.
